@@ -4,7 +4,7 @@ import time
 from PIL import Image
 
 def hide_mouse_cursor():
-    subprocess.run(['xdotool', 'mousemove', '5840', '2080'])
+    subprocess.run(['xdotool', 'mousemove', '0', '0'])
     
 # Set the paths for the image folders
 left_folder = '/home/d1/Slides/Screen001/'
@@ -14,6 +14,7 @@ right_folder = '/home/d1/Slides/Screen002/'
 left_images = sorted([os.path.join(left_folder, file) for file in os.listdir(left_folder) if file.endswith(('.jpg', '.png'))])
 right_images = sorted([os.path.join(right_folder, file) for file in os.listdir(right_folder) if file.endswith(('.jpg', '.png'))])
 
+# Total size of local displays
 WIDTH = 3840
 HEIGHT = 1080
 
@@ -56,17 +57,15 @@ feh_process = subprocess.Popen(feh_command, shell=True)
 # Function to send a key event to feh using xdotool
 def send_key_event(key):
     subprocess.run(['xdotool', 'key', key])
+    
 
 # Example: Advance to the next image after 5 seconds
 while True:
     time.sleep(2)
     send_key_event('Right')
 
-    # Check if the Escape key is pressed
-    if user_input.lower() == 'escape':
-        break
 
 
-# Wait for the feh process to complete
-#feh_process.wait()
+
+feh_process.wait()
 
