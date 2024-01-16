@@ -1,7 +1,11 @@
-from PIL import Image
 import subprocess
 import os
+import time
+from PIL import Image
 
+def hide_mouse_cursor():
+    subprocess.run(['xdotool', 'mousemove', '5840', '2080'])
+    
 # Set the paths for the image folders
 left_folder = '/home/d1/Slides/Screen001/'
 right_folder = '/home/d1/Slides/Screen002/'
@@ -38,6 +42,31 @@ for i, combined_image in enumerate(combined_images):
 # Create a space-separated string of image paths
 image_paths = ' '.join([os.path.join(output_folder, f'combined_{i + 1}.jpg') for i in range(len(combined_images))])
 
-# Use feh to run a slideshow with a 5-second delay between images
-feh_command = f'feh --borderless --geometry 3840x1080+0+0 -D 5 {image_paths}'
-subprocess.run(feh_command, shell=True)
+# Use feh to run a slideshow without automatic advancement
+feh_command = f'feh --borderless --geometry 3840x1080+0+0 {image_paths}'
+
+#hide mouse
+hide_mouse_cursor()
+	
+# Run the feh command in a separate process
+
+feh_process = subprocess.Popen(feh_command, shell=True)
+
+
+# Function to send a key event to feh using xdotool
+def send_key_event(key):
+    subprocess.run(['xdotool', 'key', key])
+
+# Example: Advance to the next image after 5 seconds
+while True:
+    time.sleep(2)
+    send_key_event('Right')
+
+    # Check if the Escape key is pressed
+    if user_input.lower() == 'escape':
+        break
+
+
+# Wait for the feh process to complete
+#feh_process.wait()
+
