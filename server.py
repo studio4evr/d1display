@@ -26,8 +26,9 @@ def run_server():
 
     clients = []
     client_count = 0
+    EXPECTED_CLIENTS = 1
 
-    while client_count < 5:
+    while client_count < EXPECTED_CLIENTS:
         client, addr = server.accept()
         print(f"[+] Accepted connection from {addr[0]}:{addr[1]}")
 
@@ -40,13 +41,21 @@ def run_server():
         client_handler = threading.Thread(target=handle_client, args=(client, client_count))
         client_handler.start()
 
-    print("[+] 5 clients connected. Sending message to all clients...")
-    
+    print("[+] All clients connected. Sending message to all clients...")
+
     time.sleep(5)
 
     # Send "beginSlideShow" message to each client individually
     for client_socket in clients:
         client_socket.send("beginSlideShow".encode('utf-8'))
+
+    # Loop to send "nextSlide" message every 5 seconds
+    while True:
+        time.sleep(5)
+        for client_socket in clients:
+            client_socket.send("nextSlide".encode('utf-8'))
+
+
 
 if __name__ == "__main__":
     run_server()
