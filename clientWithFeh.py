@@ -116,6 +116,7 @@ def start_slideshow(left_folder, right_folder):
         print("Combining images into folder:", combined_folder)
         combined_images = []
         for left_img, right_img in zip(left_images, right_images):
+            print("Combining "+left_img+" & "+right_img+" in memory...")
             image1 = Image.open(left_img)
             image2 = Image.open(right_img)
             combined_image = Image.new('RGB', (WIDTH, HEIGHT))
@@ -126,7 +127,8 @@ def start_slideshow(left_folder, right_folder):
         os.makedirs(combined_folder, exist_ok=True)
 
         for i, combined_image in enumerate(combined_images):
-            output_path = os.path.join(combined_folder, f'combined_{i + 1}.jpg')
+            print("Saving...")
+            output_path = os.path.join(combined_folder, f'combined_{i + 1:03}.jpg')  # Zero-padding to 3 digits
             combined_image.save(output_path)
     else:
         print("Combined folder already exists. Skipping image processing.")

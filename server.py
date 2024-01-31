@@ -26,7 +26,7 @@ def run_server():
 
     clients = []
     client_count = 0
-    EXPECTED_CLIENTS = 1
+    EXPECTED_CLIENTS = 5
 
     while client_count < EXPECTED_CLIENTS:
         client, addr = server.accept()
