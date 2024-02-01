@@ -49,9 +49,9 @@ def run_server():
     for client_socket in clients:
         client_socket.send("beginSlideShow".encode('utf-8'))
 
-    # Loop to send "nextSlide" message every 5 seconds
+    # Loop to send "nextSlide" message every 10 seconds
     while True:
-        time.sleep(5)
+        time.sleep(10)
         for client_socket in clients:
             client_socket.send("nextSlide".encode('utf-8'))
 

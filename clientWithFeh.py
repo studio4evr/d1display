@@ -5,8 +5,9 @@ import subprocess
 import os
 from PIL import Image
 
-# Global variable to store the assignment number
+# Global variables
 assignment_number = None
+client_socket = None  # Global variable to hold the client socket
 
 def hide_mouse_cursor():
     subprocess.run(['xdotool', 'mousemove', '0', '0'])
@@ -14,14 +15,15 @@ def hide_mouse_cursor():
 # Function to send a key event to feh using xdotool
 def send_key_event(key):
     subprocess.run(['xdotool', 'key', key])
-    
+
 def receive_assignment(client_socket):
     global assignment_number
     assignment = client_socket.recv(1024).decode('utf-8')
     print(f"You are assigned client number: {assignment}")
     assignment_number = assignment
 
-def handle_server_commands(client_socket):
+def handle_server_commands():
+    global client_socket
     while True:
         command = client_socket.recv(1024).decode('utf-8')
         if not command:
@@ -40,42 +42,40 @@ def handle_server_commands(client_socket):
             print(f"Received from server: {command}")
 
 def send_ready_for_next_slide_message():
-    # Send a message to the server indicating that the client is ready for the next slide
     global assignment_number
     if assignment_number is not None:
         try:
-            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('192.168.1.0', 12346))  # Replace with the actual IP address and port
             client_socket.send("readyForNextSlide".encode('utf-8'))
-            client_socket.close()
         except Exception as e:
             print(f"Error sending ready for next slide message: {e}")
 
 def run_client():
-    global assignment_number
-    try:
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect(('192.168.1.0', 12346))  # Replace with the actual IP address and port
+    global assignment_number, client_socket
+    connected = False
+    while not connected:
+        try:
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect(('192.168.1.0', 12346))  # Replace with the actual IP address and port
+            connected = True  # Connection successful
+            print("[+] Connected to the server")
 
-        print("[+] Connected to the server")
+            # Receive the assignment number only once
+            receive_assignment(client_socket)
 
-        # Receive the assignment number only once
-        receive_assignment(client)
+            # Listen for server commands in a separate thread
+            command_listener = threading.Thread(target=handle_server_commands)
+            command_listener.start()
 
-        # Listen for server commands in a separate thread
-        command_listener = threading.Thread(target=handle_server_commands, args=(client,))
-        command_listener.start()
+            # Wait for the command listener thread to finish before closing the client
+            command_listener.join()
 
-        # Wait for the command listener thread to finish before closing the client
-        command_listener.join()
+        except ConnectionRefusedError:
+            print("Connection refused. Retrying in 5 seconds...")
+            time.sleep(5)
+        finally:
+            if not connected:
+                client_socket.close()  # Close the client socket if not connected
 
-    except ConnectionRefusedError:
-        print("Connection refused. Retrying in 5 seconds...")
-        time.sleep(5)
-
-    finally:
-        # Close the client socket
-        client.close()
 
 def convert_assignment_to_folders(assignment):
     if assignment == 1:
@@ -87,7 +87,7 @@ def convert_assignment_to_folders(assignment):
     elif assignment == 4:
         return [7, 8]
     elif assignment == 5:
-        return [9, 1]
+        return [9, 1] #10th Screen is a duplicate of first screen
     else:
         return None
 
