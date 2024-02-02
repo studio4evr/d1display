@@ -55,7 +55,7 @@ def run_client():
     while not connected:
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('127.0.0.1', 12346))  # Replace with the actual IP address and port
+            client_socket.connect(('192.168.1.0', 12346))  # Replace with the actual IP address and port
             connected = True  # Connection successful
             print("[+] Connected to the server")
 
