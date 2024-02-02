@@ -87,7 +87,7 @@ def start_slideshow(left_folder, right_folder):
     print("Starting slideshow with right folder:", right_folder)
 
 def next_slide_function():
-    # Implement your logic for handling next slide command here
+
     print("Next slide command received from server. Implementing next slide functionality...")
 
 if __name__ == "__main__":

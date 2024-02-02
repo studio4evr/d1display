@@ -19,7 +19,7 @@ def send_message_to_all_clients(clients, message):
 
 def run_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('0.0.0.0', 12346))  # Choose a port (e.g., 12345)
+    server.bind(('192.168.1.0', 12346))  # Choose a port (e.g., 12345)
     server.listen(5)
 
     print("[+] Server listening for incoming connections")
