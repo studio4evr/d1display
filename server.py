@@ -9,8 +9,8 @@ compiling_condition = threading.Condition(compiling_lock)
 
 # Define the interim type mapping based on client IDs
 interim_type_mapping = {
-    1: "R03L08",
-    2: "R05L00",
+    1: "L03R08",
+    2: "R00L05",
     3: "L02R12",
     4: "L03R09",
     5: "L06R06"

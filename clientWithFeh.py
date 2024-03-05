@@ -195,45 +195,61 @@ def start_slideshow(left_folder, right_folder):
         
     print("Sorting Images based on show program...")
 
+	# sort timecodes
+    if interim_type == "R": firstTimeCode, secondTimeCode = secondTime, firstTimeCode
+	
+    # Define images
     special_images = [os.path.join(special_folder, 'black.jpg'), os.path.join(special_folder, 'left_black.jpg')]
     combined_images = sorted([os.path.join(combined_folder, file) for file in os.listdir(combined_folder) if file.startswith('combined_')])
     interim_images_folder = interimL_folder if interim_type == "L" else interimR_folder
     interim_images = sorted([os.path.join(interim_images_folder, file) for file in os.listdir(interim_images_folder)])
     
-    image_sequence = special_images + combined_images[:1]  # Start with special images and the first combined image
+    # Initial slideshow with special images
+    initial_sequence = special_images  # Start only with special images
+    initial_image_paths = ' '.join(initial_sequence)
+    initial_feh_command = f'feh --borderless --geometry 3840x1080+0+0 --slideshow {initial_image_paths}'
     
-    for combined_image, interim_image in zip(combined_images[1:], interim_images):
-        image_sequence.extend([interim_image, combined_image])
-        
-    print("Sorting complete.")
-    send_message("compiling finished")
+    # Construct the sequence for the main slideshow
+    image_sequence2 = []
+    for combined_image, interim_image in zip(combined_images, interim_images):
+        image_sequence2.extend([combined_image,interim_image])
+    image_paths2 = ' '.join(image_sequence2)
     
-    image_paths = ' '.join(image_sequence)
-    feh_command = f'feh --borderless --geometry 3840x1080+0+0 --slideshow-delay 5 {image_paths}'
-    subprocess.Popen(feh_command, shell=True)
-    print("showing black slide")
-    waitfor(int(assignment_number) * 0.04)
+    # Start the initial slideshow and capture its PID
+    
+    print("now showing black slide on "+assignment_number)
+    initial_process = subprocess.Popen(initial_feh_command, shell=True)
+
+    waitfor(((int(assignment_number)*2)-1) * 0.04)
     send_key_event('Right')
-    print("showing opening slide")
-    waitfor(10-(int(assignment_number) * 0.04))
-    send_key_event('Right')
-    print("showing opening slide")
-    send_message("Ready for next slide")
+    print("now showing left black slide")
+    waitfor((int(assignment_number)*2) * 0.04)
+
+    print("terminating...")
+    
+    initial_process.kill()
+
+    # Start the main slideshow
+    if image_sequence2:  # Ensure the sequence is not empty
+        first_combined_image = image_sequence2[0]  # The first image should be from combined_images
+        feh_command = f'feh --borderless --geometry 3840x1080+0+0 --slideshow-delay 5 --start-at "{first_combined_image}" {image_paths2}'
+        subprocess.Popen(feh_command, shell=True)
+    print("Slideshow restarted with remaining images.")
+    #send_message("Ready for next slide")
+
 
 def waitfor(waittime):
     time.sleep(waittime)
     print(f"waiting for {waittime}")
 
 def next_slide_function():
-    
-    print("Next slide command received from server. Implementing next slide functionality...")
+    print("nextslide")
     waitfor(int(firstTimeCode) * 0.04)
     print("interim")
     send_key_event('Right')
     waitfor((int(secondTimeCode) - int(firstTimeCode)) * 0.04)
-    print("nextslide")
     send_key_event('Right')
-    send_message("Ready for next slide")
+    #send_message("Ready for next slide")
 
 if __name__ == "__main__":
     run_client()
