@@ -137,7 +137,6 @@ def start_slideshow(left_folder, right_folder):
     
     if not os.path.exists(combined_folder):
         send_message("compiling")
-        print("Combining images into folder:", combined_folder)
         os.makedirs(combined_folder, exist_ok=True)
 
         interimL_folder = f'/home/d1/Slides/Client{assignment_number.zfill(2)}InterimL/'
@@ -153,6 +152,7 @@ def start_slideshow(left_folder, right_folder):
         black_image.save(black_image_path)
 
         if left_images:
+            print("Creating opening images")
             first_left_img_path = left_images[0]
             first_left_img = Image.open(first_left_img_path)
             left_and_black_image = Image.new('RGB', (WIDTH, HEIGHT))
@@ -160,10 +160,10 @@ def start_slideshow(left_folder, right_folder):
             left_and_black_image_path = os.path.join(special_folder, 'left_black.jpg')
             left_and_black_image.save(left_and_black_image_path)
 
-        for i in range(len(left_images) - 1):
+        for i in range(len(left_images)):
             left_img = left_images[i]
             right_img = right_images[i]
-            print("Combining " + left_img + " & " + right_img + " in memory...")
+            print(f"Combining " + left_img + " & " + right_img + f" in memory for slide {i}")
             image1 = Image.open(left_img)
             image2 = Image.open(right_img)
             combined_image = Image.new('RGB', (WIDTH, HEIGHT))
@@ -171,9 +171,13 @@ def start_slideshow(left_folder, right_folder):
             combined_image.paste(image2, (image1.width, 0))
             output_path = os.path.join(combined_folder, f'combined_{i + 1:03}.jpg')
             combined_image.save(output_path)
-
-            next_left_img = Image.open(left_images[i + 1])
-            next_right_img = Image.open(right_images[i + 1])
+            
+            if (i < (len(left_images)-1)):              
+                next_left_img = Image.open(left_images[i + 1])
+                next_right_img = Image.open(right_images[i + 1])
+            else:
+                next_left_img = Image.open(left_images[0])
+                next_right_img = Image.open(right_images[0])
 
             interimL_image = Image.new('RGB', (WIDTH, HEIGHT))
             interimL_image.paste(next_left_img, (0, 0))
@@ -187,7 +191,7 @@ def start_slideshow(left_folder, right_folder):
             interimR_path = os.path.join(interimR_folder, f'interimR_{i + 1:03}.jpg')
             interimR_image.save(interimR_path)
     else:
-        print("Combined folder already exists. Skipping image processing.")
+        print("Combined folders already exists. Skipping image processing.")
         
     print("Sorting Images based on show program...")
 
@@ -203,13 +207,17 @@ def start_slideshow(left_folder, right_folder):
         
     print("Sorting complete.")
     send_message("compiling finished")
-	
+    
     image_paths = ' '.join(image_sequence)
     feh_command = f'feh --borderless --geometry 3840x1080+0+0 --slideshow-delay 5 {image_paths}'
-    #subprocess.Popen(feh_command, shell=True)
-    print("showing first slide")
+    subprocess.Popen(feh_command, shell=True)
+    print("showing black slide")
     waitfor(int(assignment_number) * 0.04)
     send_key_event('Right')
+    print("showing opening slide")
+    waitfor(10-(int(assignment_number) * 0.04))
+    send_key_event('Right')
+    print("showing opening slide")
     send_message("Ready for next slide")
 
 def waitfor(waittime):
@@ -217,12 +225,14 @@ def waitfor(waittime):
     print(f"waiting for {waittime}")
 
 def next_slide_function():
-	
+    
     print("Next slide command received from server. Implementing next slide functionality...")
     waitfor(int(firstTimeCode) * 0.04)
-    #send_key_event('Right')
+    print("interim")
+    send_key_event('Right')
     waitfor((int(secondTimeCode) - int(firstTimeCode)) * 0.04)
-    #send_key_event('Right')
+    print("nextslide")
+    send_key_event('Right')
     send_message("Ready for next slide")
 
 if __name__ == "__main__":
