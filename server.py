@@ -103,7 +103,8 @@ def run_server():
     # Starting the slideshow
     send_message_to_all_clients(clients, "beginSlideShow")
     time.sleep(10)
-    send_message_to_all_clients(clients, "nextSlide")
+    #send_message_to_all_clients(clients, "nextSlide")
+    send_message_to_all_clients(clients, "extraSlide")
     
     while True:
         time.sleep(10)

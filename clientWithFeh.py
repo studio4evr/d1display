@@ -59,6 +59,8 @@ def handle_server_commands():
                 print("Invalid assignment number. Unable to identify folders.")
         elif command == "nextSlide":
             next_slide_function()
+        elif command == "extraSlide":
+            doExtraSlide()            
         else:
             print(f"Received from server: {command}")
 
@@ -232,16 +234,20 @@ def start_slideshow(left_folder, right_folder):
     # Start the main slideshow
     if image_sequence2:  # Ensure the sequence is not empty
         first_combined_image = image_sequence2[0]  # The first image should be from combined_images
-        feh_command = f'feh --borderless --geometry 3840x1080+0+0 --slideshow-delay 5 --start-at "{first_combined_image}" {image_paths2}'
+        feh_command = f'feh --borderless --geometry 3840x1080+0+0 --slideshow --start-at "{first_combined_image}" {image_paths2}'
         subprocess.Popen(feh_command, shell=True)
     print("Slideshow restarted with remaining images.")
-    #send_message("Ready for next slide")
-
+    send_message("Ready for next slide")
+    send_key_event('Right')
 
 def waitfor(waittime):
     time.sleep(waittime)
     print(f"waiting for {waittime}")
 
+def doExtraSlide():
+    print("extra slide")
+    send_key_event('Right')
+    
 def next_slide_function():
     print("nextslide")
     waitfor(int(firstTimeCode) * 0.04)
@@ -249,7 +255,7 @@ def next_slide_function():
     send_key_event('Right')
     waitfor((int(secondTimeCode) - int(firstTimeCode)) * 0.04)
     send_key_event('Right')
-    #send_message("Ready for next slide")
+    send_message("Ready for next slide")
 
 if __name__ == "__main__":
     run_client()
