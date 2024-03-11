@@ -83,7 +83,7 @@ def run_server():
     server.bind(('192.168.1.0', 12346))
     server.listen(5)
     print("[+] Server listening for incoming connections")
-    EXPECTED_CLIENTS = 1
+    EXPECTED_CLIENTS = 5
     clients = []
 
     while True:
@@ -105,10 +105,17 @@ def run_server():
     time.sleep(10)
     #send_message_to_all_clients(clients, "nextSlide")
     send_message_to_all_clients(clients, "extraSlide")
-    
+    slideNumber = 1
     while True:
         time.sleep(10)
+        print(f"Showing slide {slideNumber}")
         send_message_to_all_clients(clients, "nextSlide")
+        slideNumber = slideNumber + 1
+        if slideNumber > 195:
+	        print("Restarting...")
+	        slideNumber = 1
+	        send_message_to_all_clients(clients, "extraSlide")
+			
 
 if __name__ == "__main__":
     run_server()
