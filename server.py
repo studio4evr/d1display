@@ -1,6 +1,7 @@
 import socket
 import threading
 import time
+import pygame
 
 # Use a global variable to track compiling state
 is_compiling = False
@@ -13,7 +14,7 @@ interim_type_mapping = {
     2: "R00L05",
     3: "L02R12",
     4: "L03R09",
-    5: "L06R06"
+    5: "L06R08"
 }
 
 def handle_client(client_socket, client_id, clients):
@@ -78,6 +79,18 @@ def assign_and_notify_client(client_socket, addr, clients):
         print("Invalid client IP address. Connection closed.")
         client_socket.close()
 
+def init_sound():
+    # Initialize pygame mixer
+    pygame.mixer.init()
+
+    # Load the MP3 file
+    mp3_file = '/home/d1/Slides/MID-MASTER-FILE_STEREO.mp3'
+    # mp3_file = '/home/d1/Downloads/no-sweat-2.mp3'
+    pygame.mixer.music.load(mp3_file)
+
+    # Play the MP3 file, looped indefinitely
+    pygame.mixer.music.play(-1)
+
 def run_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind(('192.168.1.0', 12346))
@@ -101,21 +114,25 @@ def run_server():
     time.sleep(5)  # Wait a bit before starting the slideshow
 
     # Starting the slideshow
+    init_sound()
     send_message_to_all_clients(clients, "beginSlideShow")
     time.sleep(10)
     #send_message_to_all_clients(clients, "nextSlide")
     send_message_to_all_clients(clients, "extraSlide")
     slideNumber = 1
     while True:
+		# Slideshow Speed:
         time.sleep(10)
+        ##
         print(f"Showing slide {slideNumber}")
         send_message_to_all_clients(clients, "nextSlide")
         slideNumber = slideNumber + 1
         if slideNumber > 195:
-	        print("Restarting...")
-	        slideNumber = 1
-	        send_message_to_all_clients(clients, "extraSlide")
-			
+            print("Restarting...")
+            slideNumber = 1
+            time.sleep(1)
+            send_message_to_all_clients(clients, "extraSlide")
+            
 
 if __name__ == "__main__":
     run_server()
