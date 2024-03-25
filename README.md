@@ -15,6 +15,16 @@ nano ~/.config/lxsession/LXDE-pi/autostart
 change static IP of each client Pi at
 nano /etc/network/interfaces
 
+Currently set to:
+
+        '192.168.1.0': 1,
+        '192.168.1.5': 2,
+        '192.168.1.2': 3,
+        '192.168.1.4': 4,
+        '192.168.1.3': 5
+
+(if needed, change in server.py id_mapping var)
+
 Go into raspi-config and switch the window system from Wayland to X11. (It's possible the X compatibility layer in Wayland ignores the geometry specifiers.)
 
 Put Slides into /Slide folder, run once and wait for one-time compilation of the slideshow.
