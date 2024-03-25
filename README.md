@@ -6,6 +6,8 @@ Run server.py on Pi 001, with clientWithFeh.py running on Pi 002, Pi 003 and Pi 
 
 System has potential to be scaled to 2 more screens per Pi added to cluster.
 
+Server Pi also uses a HiFi Berry card to output to phono (see hifi berry docs for startup edits)
+
 Install libraries and add respective scripts to autostart at:
 
 nano ~/.config/lxsession/LXDE-pi/autostart
@@ -46,9 +48,13 @@ Ethernet Leads (5x 0.3m): Pro Signal PSG03119 Cat5e RJ45 Ethernet Patch Lead, 0.
 
 Fan: BQLZR 5V Black 8CM 8025 USB Silent Power Ball Bearing Computer Case Cooling Fan for Computer Case CPU Cooler : Amazon.co.uk: Computers & Accessories
 
+HiFiBerry DAC+ Light × 1
+
+phono out cables and mounts.
+
 Notes:
 
-Drill holes in the case for fixing fan, HDMI mounts, PSU and cluster.
+Drill holes in the case for fixing fan, HDMI and phone output mounts, PSU and cluster.
 
 Assemble giving care to soldering 5V power inputs on the Pis, fan and Network switch to 5v power outputs on the Case. If in doubt, consult an electrical engineer.
 
